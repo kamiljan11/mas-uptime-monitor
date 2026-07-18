@@ -1,0 +1,48 @@
+name: Uptime Monitor
+# Pinguje strony z sites.json co 10 min. Pad -> Issue z etykieta "downtime" + (opcjonalnie) alert.
+# Zero zewnetrznego SaaS — dziala na GitHub Actions.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - id: ping
+        run: node check.mjs
+        continue-on-error: true
+
+      - name: Otworz/aktualizuj Issue gdy DOWN
+        if: steps.ping.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BODY=$(cat down.md)
+          EXISTING=$(gh issue list --label downtime --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+          else
+            gh issue create --title "🔴 Strona niedostepna" --label downtime --body "$BODY"
+          fi
+
+      - name: Zamknij Issue gdy wszystko UP
+        if: steps.ping.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for n in $(gh issue list --label downtime --state open --json number --jq '.[].number'); do
+            gh issue comment "$n" --body "✅ Wszystkie strony znow UP ($(date -u))."
+            gh issue close "$n"
+          done
