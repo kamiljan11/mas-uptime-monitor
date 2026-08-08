@@ -1,9 +1,17 @@
 {
   "_comment": "Lista monitorowanych stron. Dodaj/usun wpisy: name + url (+ opcjonalnie expect_status, domyslnie 200). Sprawdzane co 10 min. Pad -> Issue + alert. UZUPELNIJ realne URL-e klientow.",
   "sites": [
-    { "name": "QuickFix", "url": "https://quickfix.is" },
-    { "name": "Reykjawwwik", "url": "https://reykjawwwik.is" },
-    { "name": "flyt.is", "url": "https://flyt.is" },
-    { "name": "MySpiritWay", "url": "https://myspiritway.org" }
+    {
+      "name": "QuickFix",
+      "url": "https://quickfix.is"
+    },
+    {
+      "name": "Reykjawwwik",
+      "url": "https://reykjawwwik.is"
+    },
+    {
+      "name": "flyt.is",
+      "url": "https://flyt.is"
+    }
   ]
 }
