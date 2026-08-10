@@ -1,21 +1,30 @@
 # MAS Uptime Monitor
 
-Monitoring dostepnosci stron klienckich MAS Group. Zero zewnetrznego SaaS — dziala na GitHub Actions.
+**Status:** production · **Built by** [Kamil Jan](https://kamiljan.com)
 
-## Jak dziala
-- Co 10 min workflow `uptime.yml` pinguje wszystkie strony z `sites.json`.
-- Strona padla (timeout / zly status, po 1 retry) -> otwiera Issue z etykieta `downtime` i komentuje przy kolejnych padach.
-- Wszystko wroci do UP -> Issue automatycznie zamykane.
+Uptime monitoring for MAS Group client sites, running entirely on GitHub Actions. No external
+SaaS, no monthly fee, no account to lose access to.
 
-## Dodanie strony
-Edytuj `sites.json`:
-```json
-{ "name": "Nazwa klienta", "url": "https://strona.is" }
-```
-Opcjonalnie `"expect_status": 301` jesli strona ma inny oczekiwany kod.
+## How it works
 
-## Alert na maila/Slacka (opcjonalne)
-Issue-based alert dziala od razu (powiadomienia GitHub). Dla maila/SMS: podepnij UptimeRobot (darmowy, 50 monitorow) jako druga warstwe — niezalezna od GitHuba.
+- Every 10 minutes the `uptime.yml` workflow pings every site listed in `sites.json`
+- A site that times out or returns a bad status — confirmed by one retry, so a single blip is
+  not an incident — opens a GitHub Issue labelled `downtime`, and comments on repeat failures
+- When everything recovers, the Issue closes itself
 
-## Recznie
-Zakladka Actions -> Uptime Monitor -> Run workflow.
+The whole point is that the alerting substrate is something already paid for and already
+watched. An Issue in a repo the team lives in beats an e-mail from a monitoring vendor.
+
+## Adding a site
+
+Add an entry to `sites.json` and commit. There is no dashboard, and that is deliberate.
+
+## How security is handled
+
+No credentials are needed — the monitor only makes unauthenticated GET requests to public
+URLs, and the only token in play is the workflow's own `GITHUB_TOKEN`, scoped to this
+repository. The repo is private because the site list maps the client portfolio.
+
+## Licence
+
+Proprietary. All rights reserved.
